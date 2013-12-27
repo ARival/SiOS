@@ -7,7 +7,7 @@
 //
 
 #import "LMEmulatorController.h"
-
+#import <GameController/GameController.h>
 #import "LMButtonView.h"
 #import "LMDPadView.h"
 #import "LMEmulatorControllerView.h"
@@ -92,7 +92,7 @@ typedef enum _LMEmulatorAlert
   SISetEmulationPaused(1);
   
   _customView.iCadeControlView.active = NO;
-  [_customView setControlsHidden:NO animated:YES];
+  //[_customView setControlsHidden:NO animated:YES];
   
   UIActionSheet* sheet = [[UIActionSheet alloc] initWithTitle:nil
                                                      delegate:self
@@ -488,15 +488,120 @@ typedef enum _LMEmulatorAlert
 #pragma mark -
 
 @implementation LMEmulatorController(UIViewController)
+- (void) setupGameController : (GCController* ) gameController
+{
+    NSLog(@"FoundController");
+    self.myController = gameController;
+    self.profile = self.myController.extendedGamepad;
+    [_customView setControlsHidden:YES animated:YES];
+    
+    self.profile.controller.controllerPausedHandler = ^(GCController *controller){
+#pragma mark pause your dilsnick
+        [self LM_options:nil];
+    };
+    
+    // Dpad
+    self.profile.dpad.up.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        if (pressed) SISetControllerPushButton(SIOS_UP);
+        else SISetControllerReleaseButton(SIOS_UP);
+    };
+    self.profile.dpad.down.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        if (pressed) SISetControllerPushButton(SIOS_DOWN);
+        else SISetControllerReleaseButton(SIOS_DOWN);
+    };
+    self.profile.dpad.left.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        if (pressed) SISetControllerPushButton(SIOS_LEFT);
+        else SISetControllerReleaseButton(SIOS_LEFT);
+    };
+    self.profile.dpad.right.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        if (pressed) SISetControllerPushButton(SIOS_RIGHT);
+        else SISetControllerReleaseButton(SIOS_RIGHT);
+    };
+    
+    // Left Analog Stick
+    self.profile.leftThumbstick.up.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
+    {
+        if (pressed) SISetControllerPushButton(SIOS_UP);
+        else SISetControllerReleaseButton(SIOS_UP);
+    };
+    self.profile.leftThumbstick.down.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
+    {
+        if (pressed) SISetControllerPushButton(SIOS_DOWN);
+        else SISetControllerReleaseButton(SIOS_DOWN);
+    };
+    self.profile.leftThumbstick.left.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
+    {
+        if (pressed) SISetControllerPushButton(SIOS_LEFT);
+        else SISetControllerReleaseButton(SIOS_LEFT);
+    };
+    self.profile.leftThumbstick.right.valueChangedHandler = ^(GCControllerButtonInput *button, float value, BOOL pressed)
+    {
+        if (pressed) SISetControllerPushButton(SIOS_RIGHT);
+        else SISetControllerReleaseButton(SIOS_RIGHT);
+    };
+    
+    // Buttons
+    self.profile.valueChangedHandler = ^(GCExtendedGamepad *gamepad, GCControllerElement *element)
+    {
+        if ((gamepad.leftShoulder == element) && gamepad.leftShoulder.isPressed)
+            SISetControllerPushButton(SIOS_L);
+        if ((gamepad.rightShoulder == element) && gamepad.rightShoulder.isPressed)
+            SISetControllerPushButton(SIOS_R);
+        if ((gamepad.buttonA == element) && gamepad.buttonA.isPressed)
+            SISetControllerPushButton(SIOS_B);
+        if ((gamepad.buttonB == element) && gamepad.buttonB.isPressed)
+            SISetControllerPushButton(SIOS_A);
+        if ((gamepad.buttonX == element) && gamepad.buttonX.isPressed)
+            SISetControllerPushButton(SIOS_Y);
+        if ((gamepad.buttonY == element) && gamepad.buttonY.isPressed)
+            SISetControllerPushButton(SIOS_X);
+        if ((gamepad.leftTrigger == element) && gamepad.leftTrigger.isPressed)
+            SISetControllerPushButton(SIOS_SELECT);
+        if ((gamepad.rightTrigger == element) && gamepad.rightTrigger.isPressed)
+            SISetControllerPushButton(SIOS_START);
+        
+        
+        if ((gamepad.leftShoulder == element) && !gamepad.leftShoulder.isPressed)
+            SISetControllerReleaseButton(SIOS_L);
+        if ((gamepad.rightShoulder == element) && !gamepad.rightShoulder.isPressed)
+            SISetControllerReleaseButton(SIOS_R);
+        if ((gamepad.buttonA == element) && !gamepad.buttonA.isPressed)
+            SISetControllerReleaseButton(SIOS_B);
+        if ((gamepad.buttonB == element) && !gamepad.buttonB.isPressed)
+            SISetControllerReleaseButton(SIOS_A);
+        if ((gamepad.buttonX == element) && !gamepad.buttonX.isPressed)
+            SISetControllerReleaseButton(SIOS_Y);
+        if ((gamepad.buttonY == element) && !gamepad.buttonY.isPressed)
+            SISetControllerReleaseButton(SIOS_X);
+        if ((gamepad.leftTrigger == element) && !gamepad.leftTrigger.isPressed)
+            SISetControllerReleaseButton(SIOS_SELECT);
+        if ((gamepad.rightTrigger == element) && !gamepad.rightTrigger.isPressed)
+            SISetControllerReleaseButton(SIOS_START);
+        
+    };
+}
 
 - (void)loadView
 {
+    
+    void (^thisBlock)(NSNotification* note) = ^(NSNotification* note)
+    {
+        NSLog(@"FoundController");
+        [self setupGameController:note.object];
+    };
+    
+    NSLog(@"%@",GCControllerDidConnectNotification);
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:GCControllerDidConnectNotification object:self.myController queue:[NSOperationQueue mainQueue] usingBlock:thisBlock];
   _customView = [[LMEmulatorControllerView alloc] initWithFrame:(CGRect){0,0,100,200}];
   _customView.iCadeControlView.delegate = self;
   [_customView.optionsButton addTarget:self action:@selector(LM_options:) forControlEvents:UIControlEventTouchUpInside];
   self.view = _customView;
   
   self.wantsFullScreenLayout = YES;
+ 
+    NSArray *controllers = [GCController controllers];
+    if ([controllers count] > 0) [self setupGameController:controllers[0]];
 }
 
 - (void)viewDidUnload

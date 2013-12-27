@@ -10,6 +10,8 @@
 
 #import "../SNES9XBridge/SIScreenDelegate.h"
 
+@class GCController;
+@class GCExtendedGamepad;
 @class LMEmulatorControllerView;
 
 @interface LMEmulatorController : UIViewController
@@ -31,6 +33,8 @@
 
 @property (copy) NSString* romFileName;
 @property (copy) NSString* initialSaveFileName;
+@property (strong) GCController* myController;
+@property (strong) GCExtendedGamepad *profile;
 
 - (void)startWithROM:(NSString*)romFileName;
 
