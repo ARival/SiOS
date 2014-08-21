@@ -1136,7 +1136,7 @@
 					"\"$(SRCROOT)/SNES9X/macosx\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SNES_CFLAGS = "-Wno-error=unused-command-line-argument-hard-error-in-future -funsigned-char -ffast-math -fexpensive-optimizations -mstructure-size-boundary=32 -falign-functions=32 -falign-loops -falign-labels -falign-jumps -finline -finline-functions -fno-builtin -fno-common -fomit-frame-pointer -fpeel-loops -fstrength-reduce -funroll-loops -fstrict-aliasing";
+				SNES_CFLAGS = "-funsigned-char -ffast-math -fexpensive-optimizations -falign-functions=32-finline -finline-functions -fno-builtin -fno-common -fomit-frame-pointer  -fstrength-reduce -funroll-loops -fstrict-aliasing";
 				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1154,7 +1154,7 @@
 					"\"$(SRCROOT)/SNES9X/macosx\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SNES_CFLAGS = "-Wno-error=unused-command-line-argument-hard-error-in-future -funsigned-char -ffast-math -fexpensive-optimizations -mstructure-size-boundary=32 -falign-functions=32 -falign-loops -falign-labels -falign-jumps -finline -finline-functions -fno-builtin -fno-common -fomit-frame-pointer -fpeel-loops -fstrength-reduce -funroll-loops -fstrict-aliasing";
+				SNES_CFLAGS = "-funsigned-char -ffast-math -fexpensive-optimizations -falign-functions=32-finline -finline-functions -fno-builtin -fno-common -fomit-frame-pointer  -fstrength-reduce -funroll-loops -fstrict-aliasing";
 				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
